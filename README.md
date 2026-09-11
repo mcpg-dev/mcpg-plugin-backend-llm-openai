@@ -63,7 +63,7 @@ plugins:
   - id: dev.mcpg.backend.llm.openai
     class: backend
     source:
-      oci: ghcr.io/mcpg-dev/source-code/plugins/backend-llm-openai:protocol-1
+      oci: ghcr.io/mcpg-dev/plugins/backend-llm-openai
 
 mcp:
   capabilities:
