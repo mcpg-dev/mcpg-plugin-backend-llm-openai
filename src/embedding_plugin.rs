@@ -123,21 +123,15 @@ impl BackendPlugin for OpenAiEmbeddingPlugin {
     ) -> Result<BackendResponse, BackendError> {
         let engine = lookup_engine(&self.engines, backend_name)?;
         let args = decode_payload(&request.payload)?;
-        let result = engine.execute(&args).await;
+        let result = engine.execute_with_usage(&args).await;
         emit_call_metrics(
             backend_name,
             engine.adapter.label(),
             &engine.spec.model,
             result.is_ok(),
         );
-        let value = result?;
-        let payload = serde_json::to_vec(&value).map_err(|e| BackendError::Transport {
-            message: format!("serialize embedding response: {e}"),
-        })?;
-        Ok(BackendResponse {
-            payload,
-            truncated: false,
-        })
+        let (value, usage) = result?;
+        mcpg_backend_llm_shared::engine::response_with_usage(value, usage, &request.headers)
     }
 
     async fn execute_streaming(
@@ -260,21 +254,15 @@ impl BackendPlugin for AzureOpenaiEmbeddingPlugin {
     ) -> Result<BackendResponse, BackendError> {
         let engine = lookup_engine(&self.engines, backend_name)?;
         let args = decode_payload(&request.payload)?;
-        let result = engine.execute(&args).await;
+        let result = engine.execute_with_usage(&args).await;
         emit_call_metrics(
             backend_name,
             engine.adapter.label(),
             &engine.spec.model,
             result.is_ok(),
         );
-        let value = result?;
-        let payload = serde_json::to_vec(&value).map_err(|e| BackendError::Transport {
-            message: format!("serialize embedding response: {e}"),
-        })?;
-        Ok(BackendResponse {
-            payload,
-            truncated: false,
-        })
+        let (value, usage) = result?;
+        mcpg_backend_llm_shared::engine::response_with_usage(value, usage, &request.headers)
     }
 
     async fn execute_streaming(

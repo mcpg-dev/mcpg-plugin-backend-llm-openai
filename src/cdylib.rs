@@ -287,6 +287,12 @@ mcpg_plugin_sdk::declare_plugin! {
     // defaults. One profile covers every backend entity this crate exports.
     backend_profile: ::mcpg_plugin_protocol::manifest::BackendProfile {
         dynamic_list: true,
+        usage_reporting_kinds: ::std::vec![
+            "openai.chat".to_owned(),
+            "azure_openai.chat".to_owned(),
+            "openai.embedding".to_owned(),
+            "azure_openai.embedding".to_owned(),
+        ],
         ..::core::default::Default::default()
     },
     entities: [
